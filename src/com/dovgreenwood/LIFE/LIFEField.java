@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Arrays;
 
 import javax.swing.JPanel;
 
@@ -39,7 +40,7 @@ public class LIFEField extends JPanel implements Runnable {
 		});
 	
 		this.setLayout(new BorderLayout());
-		this.add(new BottomPanel(), BorderLayout.SOUTH);
+		this.add(new BottomPanel(nv, this), BorderLayout.SOUTH);
 	}
 
 	private int surrounding(int x, int y) {
@@ -61,27 +62,43 @@ public class LIFEField extends JPanel implements Runnable {
 	private void setupSquare(int x, int y) {
 		x = x / nv.squareSize;
 		y = y / nv.squareSize;
-		if(field[x][y] == false)
-			field[x][y] = true;
-		else
-			field[x][y] = false;
+		if(x < field.length && y < field[x].length) {
+			if(field[x][y] == false)
+				field[x][y] = true;
+			else
+				field[x][y] = false;
+		}
 		repaint();
 	}
 
 	public void paintComponent(Graphics plane) {
 		super.paintComponent(plane);
+		
+		boolean [][] newArray = expandField();
+		
 		for(int x = 0; x < nv.width; x += 1) {
 			for(int y = 0; y < nv.height; y += 1) {
-				if(field[x][y] == false) {
+				if(newArray[x][y] == false) {
 					plane.setColor(Color.BLACK);
-					plane.drawRect(x*nv.squareSize, y*nv.squareSize, nv.squareSize, nv.squareSize);
+					plane.drawRect(x * nv.squareSize, y * nv.squareSize, nv.squareSize, nv.squareSize);
 				}
 				else {
 					plane.setColor(Color.GREEN);
-					plane.fillRect(x*nv.squareSize, y*nv.squareSize, nv.squareSize, nv.squareSize);
+					plane.fillRect(x * nv.squareSize, y * nv.squareSize, nv.squareSize, nv.squareSize);
 				}
 			}
 		}
+	}
+
+	private boolean[][] expandField() {
+		boolean [][] newArray = new boolean [nv.width][nv.height];
+		for(int i = 0; i < nv.width; i++)
+			for(int j = 0; i < nv.height; i++)
+				newArray[i][j] = false;
+		for(int i = 0; i < field.length; i++)
+			newArray[i] = Arrays.copyOf(field[i], nv.height);
+		field = newArray;
+		return newArray;
 	}
 
 	//pauses for the given number of milliseconds
@@ -95,8 +112,8 @@ public class LIFEField extends JPanel implements Runnable {
 
 	//main game loop (set as a Thread to be able to close)
 	public void run() {
-		boolean [][] newField = new boolean[nv.width][nv.height];
 		while(beginGame) {
+			boolean [][] newField = new boolean[nv.width][nv.height];
 			for(int x = 0; x < nv.width; x += 1) {
 				for(int y = 0; y < nv.height; y += 1) {
 					int trues = surrounding(x, y);
@@ -113,8 +130,9 @@ public class LIFEField extends JPanel implements Runnable {
 					field[x][y] = newField[x][y];
 				}
 			}
-			update(this.getGraphics());
-			delay(200);
+			revalidate();
+			repaint();
+			delay(nv.delay);
 		}
 	}
 

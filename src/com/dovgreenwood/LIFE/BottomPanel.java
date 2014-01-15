@@ -11,21 +11,36 @@ import javax.swing.JTextField;
 
 public class BottomPanel extends JPanel {
 	
-	private JTextField changeSquareSize = new JTextField("10",10);
-	private JTextField changeHeight = new JTextField("50", 10);
-	private JTextField changeWidth = new JTextField("100", 10);
+	private JTextField changeSquareSize = new JTextField(10);
+	private JTextField changeHeight = new JTextField(10);
+	private JTextField changeWidth = new JTextField(10);
+	private JTextField changeDelay = new JTextField(10);
 	private JButton change = new JButton("CHANGE");
 	
-	private NV nv = new NV();
+	private NV nv;
+	private LIFEField lf;
 	
-	public BottomPanel() {
+	public BottomPanel(NV nv, LIFEField lf) {
+		this.nv = nv;
+		this.lf = lf;
 		this.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		
+		this.add(new JLabel("Delay (millis): "));
+		changeDelay.setText(Integer.toString(nv.delay));
+		this.add(changeDelay);
+		
 		this.add(new JLabel("Square Size: "));
+		changeSquareSize.setText(Integer.toString(nv.squareSize));
 		this.add(changeSquareSize);
+		
 		this.add(new JLabel("Height (# of squares): "));
+		changeHeight.setText(Integer.toString(nv.height));
 		this.add(changeHeight);
+		
 		this.add(new JLabel("Width (# of squares): "));
+		changeWidth.setText(Integer.toString(nv.width));
 		this.add(changeWidth);
+		
 		change.addActionListener(new ButtonListener());
 		this.add(change);
 	}
@@ -36,7 +51,8 @@ public class BottomPanel extends JPanel {
 			nv.width = Integer.parseInt(changeWidth.getText());
 			nv.height = Integer.parseInt(changeHeight.getText());
 			nv.squareSize = Integer.parseInt(changeSquareSize.getText());
-			System.out.println(nv.height + " " + nv.width + " " + nv.squareSize);
+			nv.delay = Integer.parseInt(changeDelay.getText());
+			lf.repaint();
 			//Entry.setSize(nv.getWidth(), nv.getHeight());
 		}
 		

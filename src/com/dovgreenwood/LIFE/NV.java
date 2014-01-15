@@ -5,4 +5,5 @@ public class NV {
 	public volatile int width = 120;
 	public volatile int height = 60;
 	public volatile int squareSize = 10;
+	public volatile int delay = 200;
 }
